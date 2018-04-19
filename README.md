@@ -5,6 +5,15 @@ API for økologi
 * [API](https://ninmemapi.artsdatabanken.no/)
 * [API documentation](https://ninmemapi.artsdatabanken.no/swagger/)
 
+## Relaterte prosjekter
+
+* [Innsynsklient](https://github.com/artsdatabanken/ratatouille)
+* [REST API](https://github.com/Artsdatabanken/ogapi)
+* [GIS Dataflyt](https://github.com/artsdatabanken/grunnkart-dataflyt)
+* [Metadataflyt](https://github.com/artsdatabanken/kverna)
+* [Geografisk API](https://github.com/Artsdatabanken/rasterQ) og [Deployment](https://github.com/Artsdatabanken/rasterUploader) av dette
+* Verktøy for [rødlisting av naturtyper](https://github.com/Artsdatabanken/natty)
+
 ## Konvensjonelt API
 
 ...
