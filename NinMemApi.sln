@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NinMemApi", "NinMemApi\NinMemApi.csproj", "{D5A2654B-050B-402B-9D55-63DDAA910952}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NinMemApi.Data", "NinMemApi.Data\NinMemApi.Data.csproj", "{F296940E-966D-49BA-8430-924E6246BBC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trees", "Trees\Trees.csproj", "{674365B9-2C1E-4CB7-BA28-344BBE216C05}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trees.Tests", "Trees.Tests\Trees.Tests.csproj", "{25DD6113-03A4-47A7-A05C-1C879F40B68F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NinMemApi.DataPreprocessing", "NinMemApi.DataPreprocessing\NinMemApi.DataPreprocessing.csproj", "{4DB9B77F-6046-4E68-BD16-9316BAEC9C52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NinMemApi.GraphDb", "NinMemApi.GraphDb\NinMemApi.GraphDb.csproj", "{955AE55C-71B3-4D62-A617-F158891A77D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D5A2654B-050B-402B-9D55-63DDAA910952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5A2654B-050B-402B-9D55-63DDAA910952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5A2654B-050B-402B-9D55-63DDAA910952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5A2654B-050B-402B-9D55-63DDAA910952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F296940E-966D-49BA-8430-924E6246BBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F296940E-966D-49BA-8430-924E6246BBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F296940E-966D-49BA-8430-924E6246BBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F296940E-966D-49BA-8430-924E6246BBC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{674365B9-2C1E-4CB7-BA28-344BBE216C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{674365B9-2C1E-4CB7-BA28-344BBE216C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{674365B9-2C1E-4CB7-BA28-344BBE216C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{674365B9-2C1E-4CB7-BA28-344BBE216C05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25DD6113-03A4-47A7-A05C-1C879F40B68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25DD6113-03A4-47A7-A05C-1C879F40B68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25DD6113-03A4-47A7-A05C-1C879F40B68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25DD6113-03A4-47A7-A05C-1C879F40B68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DB9B77F-6046-4E68-BD16-9316BAEC9C52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB9B77F-6046-4E68-BD16-9316BAEC9C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB9B77F-6046-4E68-BD16-9316BAEC9C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB9B77F-6046-4E68-BD16-9316BAEC9C52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955AE55C-71B3-4D62-A617-F158891A77D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955AE55C-71B3-4D62-A617-F158891A77D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955AE55C-71B3-4D62-A617-F158891A77D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955AE55C-71B3-4D62-A617-F158891A77D4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7566E272-8D63-4F4F-ADD9-788AB505F41F}
+	EndGlobalSection
+EndGlobal
