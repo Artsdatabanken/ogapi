@@ -5,4 +5,3 @@ script:
  - dotnet restore
  - dotnet build
  - dotnet test Trees.Tests
- - dotnet test
