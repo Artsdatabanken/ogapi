@@ -20,7 +20,7 @@ deploy:
   api_key: '$GITHUB_API_KEY'
   on:
     branch: master
-    #tags: true
+#tags: true
  - provider: pages
   local-dir: NinMemApi/bin/
   skip-cleanup: true
