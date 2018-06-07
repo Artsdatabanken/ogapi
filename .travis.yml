@@ -12,6 +12,4 @@ deploy:
   skip_cleanup: true
   api_key: '$GITHUB_API_KEY'
   on:
-    branches:
-      only:
-        - master
+    branch: master

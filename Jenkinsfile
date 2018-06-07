@@ -74,8 +74,8 @@ pipeline {
 	}
 }
 
-def deployWeb(baseUnc, appName, release) {
-		dir('PublishOutput\\OgApi' + release) {
+def deployWeb(baseUnc, appName) {
+		dir('NinMemApi\\bin\\Debug') {
 			virtualPath = '/ogapi/'
 			physicalPath = baseUnc+'\\OgApi\\'
 			deployPath('.', physicalPath)
