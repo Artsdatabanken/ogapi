@@ -103,4 +103,5 @@ def delete(filespec) {
 def buildDotnet(slnPath, publishProfile) {
 	bat 'dotnet restore'
   	bat 'dotnet build'
+	bat 'dotnet publish'
 }

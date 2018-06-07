@@ -5,11 +5,20 @@ script:
  - dotnet restore
  - dotnet build
  - dotnet test Trees.Tests
+ - dotnet publish
 deploy:
-  provider: releases
+ - provider: releases
   file_glob: true
   file: NinMemApi/bin/*
   skip_cleanup: true
   api_key: '$GITHUB_API_KEY'
   on:
-    tags: true
+    branch: master
+    #tags: true
+ - provider: pages
+  local-dir: NinMemApi/bin/
+  skip-cleanup: true
+  github-token: $GITHUB_API_KEY  # Set in the settings page of your repository, as a secure variable
+  keep-history: false
+  on:
+    branch: master
