@@ -33,10 +33,6 @@ pipeline {
     }
     stage("Deploy til it-webadb03") {
 			steps {
-				bat('dir')
-				bat('dir PublishOutput\\')
-				bat('dir PublishOutput\\OgApi\\')
-				//delete('PublishOutput\\OgApi\\Web.config')
         deployWeb('\\\\it-webadb03.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/')
 			}
     }
