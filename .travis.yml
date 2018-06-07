@@ -6,10 +6,16 @@ script:
  - dotnet build
  - dotnet test Trees.Tests
  - dotnet publish
+ - ls
+ - ls  NinMemApi/
+ - ls  NinMemApi/bin/
+ - ls  NinMemApi/bin/Debug/
+ - ls  NinMemApi/bin/Debug/netcoreapp2.1/
+ - ls  NinMemApi/bin/Debug/netcoreapp2.1/publish/
 deploy:
  - provider: releases
   file_glob: true
-  file: NinMemApi/bin/*
+  file: NinMemApi/bin/Debug/netcoreapp2.1/publish/*
   skip_cleanup: true
   api_key: '$GITHUB_API_KEY'
   on:
