@@ -8,6 +8,7 @@ pipeline {
 	stages {
 		stage('Build Backend') {
 			steps {
+                bat('dir')
 				buildDotnet('NinMemApi.sln', 'FolderProfile')
 				archive 'PublishOutput/'
 			}
@@ -102,12 +103,6 @@ def delete(filespec) {
 }
 
 def buildDotnet(slnPath, publishProfile) {
-	bat 'SUBST P: /D | ECHO' // Swallow exit code when subst does not exist
-	bat 'SUBST P: ' + WORKSPACE
-	bat 'NuGet.exe restore "' + 'P:' + slnPath + '"'
-	bat 'SUBST P: /D | ECHO'
-	bat '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\bin\\msbuild.exe" '+slnPath+
-	' /p:Configuration=Release /p:Platform="Any CPU" /verbosity:quiet '+
-	'/p:ProductVersion=1.0.0.${env.BUILD_NUMBER} /p:DeployOnBuild=true '+
-	'/p:PublishProfile=' + publishProfile
+	bat 'dotnet restore'
+  	bat 'dotnet build'
 }

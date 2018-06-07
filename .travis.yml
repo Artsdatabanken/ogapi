@@ -10,5 +10,3 @@ deploy:
   file_glob: true
   file: NinMemApi/bin/*
   skip_cleanup: true
-  on:
-    tags: true
