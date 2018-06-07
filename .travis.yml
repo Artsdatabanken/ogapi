@@ -6,15 +6,9 @@ script:
  - dotnet build
  - dotnet test Trees.Tests
  - dotnet publish
- - ls
- - ls NinMemApi/
- - ls NinMemApi/bin/
- - ls NinMemApi/bin/Debug/
- - ls NinMemApi/bin/Debug/netcoreapp2.0/
- - ls NinMemApi/bin/Debug/netcoreapp2.0/publish/
 deploy:
  - provider: pages
-   local-dir: NinMemApi/bin/netcoreapp2.0/publish/
+   local-dir: NinMemApi/bin/netcoreapp2.0/
    skip-cleanup: true
    github-token: $GITHUB_API_KEY  # Set in the settings page of your repository, as a secure variable
    keep-history: false
