@@ -8,9 +8,8 @@ pipeline {
 	stages {
 		stage('Build Backend') {
 			steps {
-                bat('dir')
 				buildDotnet('NinMemApi.sln', 'FolderProfile')
-				archive 'PublishOutput/'
+				archiveArtifacts 'NinMemApi/bin/Debug/'
 			}
 		}
 
@@ -76,9 +75,9 @@ pipeline {
 }
 
 def deployWeb(baseUnc, appName, release) {
-		dir('PublishOutput\\OgApi' + release) { // api
-			virtualPath = '/ogapi/' + env.BRANCH_NAME + '_api'
-			physicalPath = baseUnc+'\\OgApi\\'+env.BRANCH_NAME+'_api'
+		dir('PublishOutput\\OgApi' + release) {
+			virtualPath = '/ogapi/'
+			physicalPath = baseUnc+'\\OgApi\\'
 			deployPath('.', physicalPath)
 	}
 }
