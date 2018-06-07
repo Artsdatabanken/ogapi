@@ -5,3 +5,10 @@ script:
  - dotnet restore
  - dotnet build
  - dotnet test Trees.Tests
+deploy:
+  provider: releases
+  file_glob: true
+  file: NinMemApi/bin/*
+  skip_cleanup: true
+  on:
+    tags: true
