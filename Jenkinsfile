@@ -16,7 +16,7 @@ pipeline {
 		stage('Deploy staging') {
 			steps {
 				deployWeb('\\\\it-webadbtest01.it.ntnu.no\\d$\\websites',
-					"utv.artsdatabanken.no", '')
+					"utv.artsdatabanken.no")
 			}
 		}
 		stage("Smoke test staging") {
@@ -37,12 +37,12 @@ pipeline {
 				bat('dir PublishOutput\\')
 				bat('dir PublishOutput\\OgApi\\')
 				//delete('PublishOutput\\OgApi\\Web.config')
-        deployWeb('\\\\it-webadb03.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/', 'Drift')
+        deployWeb('\\\\it-webadb03.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/')
 			}
     }
     stage("Deploy til it-webadb04") {
 			steps {
-        deployWeb('\\\\it-webadb04.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/', 'Drift')
+        deployWeb('\\\\it-webadb04.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/')
 			}
     }
     stage("Smoke test production") {
