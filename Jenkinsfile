@@ -75,7 +75,7 @@ pipeline {
 }
 
 def deployWeb(baseUnc, appName) {
-		dir('NinMemApi\\bin\\Debug') {
+		dir('NinMemApi\\bin\\Debug\\netcoreapp2.0') {
 			virtualPath = '/ogapi/'
 			physicalPath = baseUnc+'\\OgApi\\'
 			deployPath('.', physicalPath)
