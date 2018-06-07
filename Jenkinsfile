@@ -36,7 +36,7 @@ pipeline {
 				bat('dir')
 				bat('dir PublishOutput\\')
 				bat('dir PublishOutput\\OgApi\\')
-				//delete('PublishOutput\\FabApi\\Web.config')
+				//delete('PublishOutput\\OgApi\\Web.config')
         deployWeb('\\\\it-webadb03.it.ntnu.no\\D$\\Websites\\database.artsdatabanken.no', 'database.artsdatabanken.no/', 'Drift')
 			}
     }
@@ -77,7 +77,7 @@ pipeline {
 def deployWeb(baseUnc, appName, release) {
 		dir('PublishOutput\\OgApi' + release) { // api
 			virtualPath = '/ogapi/' + env.BRANCH_NAME + '_api'
-			physicalPath = baseUnc+'\\Fab\\'+env.BRANCH_NAME+'_api'
+			physicalPath = baseUnc+'\\OgApi\\'+env.BRANCH_NAME+'_api'
 			deployPath('.', physicalPath)
   			iisConvertToApplication(appName, virtualPath, physicalPath)
 	}
