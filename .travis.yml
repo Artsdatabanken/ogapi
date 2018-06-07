@@ -10,3 +10,4 @@ deploy:
   file_glob: true
   file: NinMemApi/bin/*
   skip_cleanup: true
+  api_key: '$GITHUB_API_KEY'

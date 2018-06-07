@@ -80,7 +80,6 @@ def deployWeb(baseUnc, appName, release) {
 			virtualPath = '/ogapi/' + env.BRANCH_NAME + '_api'
 			physicalPath = baseUnc+'\\OgApi\\'+env.BRANCH_NAME+'_api'
 			deployPath('.', physicalPath)
-  			iisConvertToApplication(appName, virtualPath, physicalPath)
 	}
 }
 
