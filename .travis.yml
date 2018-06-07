@@ -13,13 +13,8 @@ script:
  - ls NinMemApi/bin/Debug/netcoreapp2.0/
  - ls NinMemApi/bin/Debug/netcoreapp2.0/publish/
 deploy:
- - provider: releases
-   file_glob: true
-   file: NinMemApi/bin/Debug/netcoreapp2.0/publish/*
-   skip_cleanup: true
-   api_key: '$GITHUB_API_KEY'
  - provider: pages
-   local-dir: NinMemApi/bin/
+   local-dir: NinMemApi/bin/netcoreapp2.0/publish/
    skip-cleanup: true
    github-token: $GITHUB_API_KEY  # Set in the settings page of your repository, as a secure variable
    keep-history: false
