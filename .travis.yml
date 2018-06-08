@@ -7,7 +7,7 @@ script:
  - dotnet publish
 deploy:
  - provider: pages
-   local-dir: NinMemApi/bin/Debug/netcoreapp2.0/publish/
+   local-dir: NinMemApi/bin/Debug/netcoreapp2.1/publish/
    skip-cleanup: true
    github-token: $GITHUB_API_KEY  # Set in the settings page of your repository, as a secure variable
    keep-history: false
