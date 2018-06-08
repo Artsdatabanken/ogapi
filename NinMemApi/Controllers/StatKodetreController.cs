@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace NinMemApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Produces("application/json")]
     [Route("v1/[controller]")]
     public class StatKodetreController : Controller
@@ -15,6 +18,10 @@ namespace NinMemApi.Controllers
 
         private readonly StatTreeBuilder _statTreeBuilder;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statTreeBuilder"></param>
         public StatKodetreController(StatTreeBuilder statTreeBuilder)
         {
             _statTreeBuilder = statTreeBuilder;
@@ -75,35 +82,96 @@ namespace NinMemApi.Controllers
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class StatTreNode
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public StatTreNode()
         {
             Barn = new List<StatTreNodeBarn>();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Kode { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Navn { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int AntallArter { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int AntallNaturomrader { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public double Areal { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public StatTreNodeForelder Forelder { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public List<StatTreNodeBarn> Barn { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class StatTreNodeBarn
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string Kode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public string Navn { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public int AntallArter { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public int AntallNaturomrader { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public double Areal { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public bool HarBarn { get; set; }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class StatTreNodeForelder
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string Kode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public string Navn { get; set; }
     }
 }

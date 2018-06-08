@@ -5,12 +5,18 @@ using System;
 
 namespace NinMemApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Produces("application/json")]
     [Route("v2/[controller]")]
     public class KoderController : Controller
     {
         private readonly CodeSearch _codeSearch;
 
+        /// <summary>
+        /// </summary>
+        /// <param name="codeSearch"></param>
         public KoderController(CodeSearch codeSearch)
         {
             _codeSearch = codeSearch;
