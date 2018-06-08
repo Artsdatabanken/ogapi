@@ -31,28 +31,11 @@ namespace NinMemApi.DataPreprocessing
             string artsdbconnectionString = configuration.GetConnectionString("artsdbstorage");
             string urlAlleKoder = configuration["UrlAlleKoder"];
             string urlVariasjoner = configuration["UrlVariasjon"];
-            string cosmosDbHost = configuration["CosmosDbHost"];
-            string cosmosDbAuthKey = configuration["CosmosDbAuthKey"];
 
-            //PopulateCosmos(artsdbconnectionString, cosmosDbHost, cosmosDbAuthKey).Wait();
             UploadDataToAzure(ninConnectionString, artsdbconnectionString, urlAlleKoder, urlVariasjoner).Wait();
 
             Console.WriteLine("Done ...");
             Console.ReadKey();
-        }
-
-        private static async Task PopulateCosmos(string artsdbConnectionString, string host, string authKey)
-        {
-            var azureStorage = new AzureStorage(new ArtsdbStorageConnectionString { ConnectionString = artsdbConnectionString }, cacheFolder: "Cache");
-
-            var graphInputGetter = new GraphInputGetter(azureStorage);
-            GraphInput input = await graphInputGetter.Get();
-
-            //var cosmosImporter = new CosmosImporter(host, authKey);
-
-            var cosmosImporter = new TaxonTraitsCosmosImporter(host, authKey);
-
-            await cosmosImporter.Import(input);
         }
 
         private static async Task UploadDataToAzure(string ninConnectionString, string artsdbconnectionString, string urlAlleKoder, string urlVariasjoner)

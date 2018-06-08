@@ -6,17 +6,29 @@ using System.Linq;
 
 namespace NinMemApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Produces("application/json")]
     [Route("v2/[controller]")]
     public class KodetreController : Controller
     {
         private readonly G _g;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="g"></param>
         public KodetreController(G g)
         {
             _g = g;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         [HttpGet]
         public KodeNavnNode Filtered(string node)
         {
