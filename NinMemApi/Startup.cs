@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Net;
+using NinMemApi.Data.Stores.Local;
 
 namespace NinMemApi
 {
@@ -50,12 +51,7 @@ namespace NinMemApi
                     });
             services.AddCors();
 
-            var artsdbStorageConnectionString = new ArtsdbStorageConnectionString { ConnectionString = Configuration.GetConnectionString("artsdbstorage") };
-
-            services.AddSingleton(artsdbStorageConnectionString);
-            services.AddSingleton<IStorage, AzureStorage>();
-
-            var graphInputGetter = new GraphInputGetter(new AzureStorage(artsdbStorageConnectionString/*, Configuration["CacheFolder"]*/));
+            var graphInputGetter = new GraphInputGetter(new LocalStorage());
             var graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
 
             G g = new G();
