@@ -47,7 +47,7 @@ namespace NinMemApi.DataPreprocessing
             var natureAreaTypes = await NatureAreaTypeLoader.Load(ninConnectionString, Codes.Create(koder.alleKoder));
             var redlistData = await RedlistLoader.Load(ninConnectionString);
             var geographicalData = await GeographicalAreaLoader.Load(ninConnectionString);
-            //var taxons = TaxonLoader.Get();
+            var taxons = TaxonLoader.Get();
             //var codetree = File.ReadAllText("..\\..\\..\\Data\\kodetre.json");
             var natureAreaVariables = await NatureAreaVariablesLoader.Load(ninConnectionString);
             //var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
@@ -61,7 +61,7 @@ namespace NinMemApi.DataPreprocessing
                 localStorage.Store(StorageKeys.NatureAreaRedlistCategories, redlistData.categories),
                 localStorage.Store(StorageKeys.NatureAreaRedlistThemes, redlistData.themes),
                 localStorage.Store(StorageKeys.NatureAreaGeographicalAreaData, geographicalData),
-                //localStorage.Store(StorageKeys.Taxons, taxons.Values.ToList()),
+                localStorage.Store(StorageKeys.Taxons, taxons.Values.ToList()),
                 //localStorage.Store(StorageKeys.CodeTree, codetree),
                 localStorage.Store(StorageKeys.NatureAreaVariables, natureAreaVariables)
                 //localStorage.Store(StorageKeys.TaxonTraits, taxonTraits)
