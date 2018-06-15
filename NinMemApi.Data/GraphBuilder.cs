@@ -202,11 +202,12 @@ namespace NinMemApi.Data
 
             var taxonTraitsDict = new Dictionary<string, TaxonTraits>();
 
-            foreach (var tt in input.TaxonTraits)
-            {
-                string code = CodePrefixes.GetTaxonCode(tt.ScientificNameId);
-                taxonTraitsDict.Add(code, tt);
-            }
+            //// TODO: uncomment this when TaxonTraits is back
+            //foreach (var tt in input.TaxonTraits)
+            //{
+            //    string code = CodePrefixes.GetTaxonCode(tt.ScientificNameId);
+            //    taxonTraitsDict.Add(code, tt);
+            //}
 
             foreach (var taxon in input.Taxons)
             {
@@ -216,6 +217,8 @@ namespace NinMemApi.Data
                 }
 
                 string code = CodePrefixes.GetTaxonCode(taxon.ScientificNameId);
+
+                if (!taxonsFromCodeTree.ContainsKey(code)) continue;
 
                 if (!g.TryGetV(code, out var vertex))
                 {

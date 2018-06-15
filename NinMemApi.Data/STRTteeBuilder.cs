@@ -1,5 +1,4 @@
-﻿using GeoAPI;
-using GeoAPI.Geometries;
+﻿using GeoAPI.Geometries;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.Strtree;
 using NetTopologySuite.IO;
@@ -16,7 +15,8 @@ namespace NinMemApi.Data
         {
             var stRtree = new STRtree<string>();
 
-            NetTopologySuiteBootstrapper.Bootstrap();
+            //// TODO: Needed for NetTopologySuite > 1.14
+            //NetTopologySuiteBootstrapper.Bootstrap();
             var reader = new WKTReader(new GeometryFactory());
 
             var parsedEnvelopes = new ConcurrentDictionary<string, Envelope>();

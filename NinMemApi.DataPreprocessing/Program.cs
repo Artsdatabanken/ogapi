@@ -50,6 +50,7 @@ namespace NinMemApi.DataPreprocessing
             var taxons = TaxonLoader.Get();
             var codetree = new WebClient().DownloadString("https://adb-typesystem.surge.sh/kodetre.json");
             var natureAreaVariables = await NatureAreaVariablesLoader.Load(ninConnectionString);
+            //// TODO: uncomment this when TaxonTraits is back
             //var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
 
             var localStorage = new LocalStorage();
@@ -64,6 +65,7 @@ namespace NinMemApi.DataPreprocessing
                 localStorage.Store(StorageKeys.Taxons, taxons.Values.ToList()),
                 localStorage.Store(StorageKeys.CodeTree, codetree),
                 localStorage.Store(StorageKeys.NatureAreaVariables, natureAreaVariables)
+                //// TODO: uncomment this when TaxonTraits is back
                 //localStorage.Store(StorageKeys.TaxonTraits, taxonTraits)
             );
         }
