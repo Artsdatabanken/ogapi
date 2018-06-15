@@ -17,14 +17,19 @@ using NinMemApi.Data.Stores.Local;
 
 namespace NinMemApi.DataPreprocessing
 {
-    internal class Program
+    public class Program
     {
         private static void Main(string[] args)
         {
+            Run();
+        }
+
+        public static void Run()
+        {
             var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
 
             IConfigurationRoot configuration = builder.Build();
 
@@ -34,8 +39,8 @@ namespace NinMemApi.DataPreprocessing
 
             StoreData(ninConnectionString, urlAlleKoder, urlVariasjoner).Wait();
 
-            Console.WriteLine("Done ...");
-            Console.ReadKey();
+            //Console.WriteLine("Done ...");
+            //Console.ReadKey();
         }
 
         private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner)

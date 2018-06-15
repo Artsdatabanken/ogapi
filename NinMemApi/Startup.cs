@@ -52,7 +52,18 @@ namespace NinMemApi
             services.AddCors();
 
             var graphInputGetter = new GraphInputGetter(new LocalStorage());
-            var graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
+            GraphInput graphInput;
+
+            try
+            {
+                graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                DataPreprocessing.Program.Run();
+
+                graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
+            }
 
             G g = new G();
             GraphBuilder.Build(g, graphInput);

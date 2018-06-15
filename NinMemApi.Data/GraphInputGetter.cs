@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using NinMemApi.Data.Interfaces;
+﻿using NinMemApi.Data.Interfaces;
 using NinMemApi.Data.Models;
 using NinMemApi.Data.Stores;
 using NinMemApi.Data.Stores.Azure;

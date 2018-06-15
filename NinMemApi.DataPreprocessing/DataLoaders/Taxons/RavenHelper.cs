@@ -9,13 +9,15 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 {
     public class RavenHelper
     {
+        private static readonly string CacheFolder = Path.GetTempPath() + "\\ninMemApiData\\";
+
         public RavenHelper()
         {
         }
 
         public FA3[] GetFa3s(string url = "http://it-webadb03.it.ntnu.no:8181", string database = "FAB3DRIFT")
         {
-            const string cacheDirectoryPath = "Data\\FA3s";
+            var cacheDirectoryPath = CacheFolder + "FA3s";
             var fa3s = ReadFromCache<FA3>(cacheDirectoryPath);
 
             if (fa3s != null)
@@ -28,7 +30,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 
         public Taxon[] GetTaxons(string url = "http://it-webadb03.it.ntnu.no:8181", string database = "Databank1")
         {
-            const string cacheDirectoryPath = "Data\\Taxons";
+            var cacheDirectoryPath = CacheFolder + "Taxons";
             var taxons = ReadFromCache<Taxon>(cacheDirectoryPath);
 
             if (taxons != null)

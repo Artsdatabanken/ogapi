@@ -9,7 +9,7 @@ namespace NinMemApi.Data.Stores.Local
 {
     public class LocalStorage : IStorage
     {
-        private static readonly string CacheFolder = Path.GetTempPath();
+        private static readonly string CacheFolder = Path.GetTempPath() + "\\ninMemApiData\\";
 
         public Task Delete(string key, string containerName = StorageConstants.NinMemApiContainerName)
         {
@@ -35,14 +35,15 @@ namespace NinMemApi.Data.Stores.Local
         }
 
 
-        private static string GetFileName(string key)
+        private static string GetFileName(string key, bool createfile = false)
         {
-            return Path.Combine(CacheFolder, key + ".json");
+            var fileName = Path.Combine(CacheFolder, key + ".json");
+            return createfile ? fileName : File.Exists(fileName) ? fileName : throw new FileNotFoundException("File not found: " + fileName);
         }
 
         public async Task Store<T>(string key, T value, string containerName = StorageConstants.NinMemApiContainerName)
         {
-            var file = File.Create(GetFileName(key));
+            var file = File.Create(GetFileName(key, true));
             var fileWriter = new StreamWriter(file);
 
             var json = typeof(T) == typeof(string) ? value as string : JsonConvert.SerializeObject(value);
