@@ -129,7 +129,7 @@ namespace NinMemApi.Data
                 }
             }
 
-            var administrativeAreas = input.CodeTree.Children[CodePrefixes.AdministrativeArea].GetAllDescendants();
+            var administrativeAreas = input.CodeTree.Children[CodePrefixes.AdministrativeArea].GetAllDescendants().Where(d => d.Key.Split('-').Length < 3);
             var aaNumberDict = new Dictionary<int, string>();
             var aaNameDict = new Dictionary<string, string>();
 
