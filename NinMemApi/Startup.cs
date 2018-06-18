@@ -13,6 +13,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Net;
+using NinMemApi.Data.Interfaces;
 using NinMemApi.Data.Stores.Local;
 using NinMemApi.Data.Stores.Web;
 
@@ -51,9 +52,7 @@ namespace NinMemApi
                     });
             services.AddCors();
 
-            var graphInputGetter = new GraphInputGetter(new WebStorage(Configuration["NinMemApiData"]));
-
-            var graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
+            var graphInput = GetGraphInput();
 
             G g = new G();
             GraphBuilder.Build(g, graphInput);
@@ -82,6 +81,22 @@ namespace NinMemApi
                 var xmlPath = Path.Combine(basePath, "NinMemApi.xml");
                 c.IncludeXmlComments(xmlPath);
             });
+        }
+
+        private GraphInput GetGraphInput()
+        {
+            var ninMemApiData = Configuration["NinMemApiData"];
+
+            IStorage storage;
+
+            if (ninMemApiData.StartsWith("http"))
+                storage = new WebStorage(ninMemApiData);
+            else
+                storage = new LocalStorage(ninMemApiData);
+
+            var graphInputGetter = new GraphInputGetter(storage);
+
+            return graphInputGetter.Get().GetAwaiter().GetResult();
         }
 
         /// <summary>

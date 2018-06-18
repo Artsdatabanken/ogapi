@@ -19,6 +19,8 @@ namespace NinMemApi.DataPreprocessing
 {
     public class Program
     {
+        private static IConfigurationRoot _configuration;
+
         private static void Main(string[] args)
         {
             Run();
@@ -31,16 +33,13 @@ namespace NinMemApi.DataPreprocessing
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
 
-            IConfigurationRoot configuration = builder.Build();
+            _configuration = builder.Build();
 
-            var ninConnectionString = configuration.GetConnectionString("Nin");
-            var urlAlleKoder = configuration["UrlAlleKoder"];
-            var urlVariasjoner = configuration["UrlVariasjon"];
+            var ninConnectionString = _configuration.GetConnectionString("Nin");
+            var urlAlleKoder = _configuration["UrlAlleKoder"];
+            var urlVariasjoner = _configuration["UrlVariasjon"];
 
             StoreData(ninConnectionString, urlAlleKoder, urlVariasjoner).Wait();
-
-            //Console.WriteLine("Done ...");
-            //Console.ReadKey();
         }
 
         private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner)
@@ -58,7 +57,11 @@ namespace NinMemApi.DataPreprocessing
             //// TODO: uncomment this when TaxonTraits is back
             //var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
 
-            var localStorage = new LocalStorage();
+            var ninMemApiDataLocation = _configuration["NinMemApiData"];
+
+            if(!Directory.Exists(ninMemApiDataLocation)) throw new DirectoryNotFoundException("Directory given in appsettings.json for \"NinMemApiData\" not found");
+
+            var localStorage = new LocalStorage(ninMemApiDataLocation);
 
             await Task.WhenAll(
                 localStorage.Store(StorageKeys.NatureAreas, natureAreas),
