@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using NinMemApi.Data.Interfaces;
+﻿using NinMemApi.Data.Interfaces;
 using NinMemApi.Data.Models;
 using NinMemApi.Data.Stores;
 using NinMemApi.Data.Stores.Azure;
@@ -26,7 +25,8 @@ namespace NinMemApi.Data
             var taxonsTask = _storage.Get<List<Taxon>>(StorageKeys.Taxons, containerName: StorageConstants.GraphContainerName);
             var codeTreeTask = _storage.Get<string>(StorageKeys.CodeTree, containerName: StorageConstants.GraphContainerName);
             var natureAreaVariablesTask = _storage.Get<List<NatureAreaVariables>>(StorageKeys.NatureAreaVariables, containerName: StorageConstants.GraphContainerName);
-            var taxonTraitsTask = _storage.Get<string>(StorageKeys.TaxonTraits, containerName: StorageConstants.GraphContainerName);
+            //// TODO: uncomment this when TaxonTraits is back
+            //var taxonTraitsTask = _storage.Get<string>(StorageKeys.TaxonTraits, containerName: StorageConstants.GraphContainerName);
 
             await Task.WhenAll(
                 natureAreasTask,
@@ -35,8 +35,10 @@ namespace NinMemApi.Data
                 natureAreaGeographicalAreaDataTask,
                 taxonsTask,
                 codeTreeTask,
-                natureAreaVariablesTask,
-                taxonTraitsTask);
+                natureAreaVariablesTask
+                //// TODO: uncomment this when TaxonTraits is back
+                //taxonTraitsTask
+                );
 
             return new GraphInput
             {
@@ -47,7 +49,8 @@ namespace NinMemApi.Data
                 Taxons = taxonsTask.Result,
                 CodeTree = CodeTreeBuilder.Build(codeTreeTask.Result),
                 NatureAreaVariables = natureAreaVariablesTask.Result,
-                TaxonTraits = JsonConvert.DeserializeObject<List<TaxonTraits>>(taxonTraitsTask.Result)
+                //// TODO: uncomment this when TaxonTraits is back
+                //TaxonTraits = JsonConvert.DeserializeObject<List<TaxonTraits>>(taxonTraitsTask.Result)
             };
         }
     }

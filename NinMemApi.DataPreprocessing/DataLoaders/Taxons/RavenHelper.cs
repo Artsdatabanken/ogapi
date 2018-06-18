@@ -9,13 +9,15 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 {
     public class RavenHelper
     {
+        private static readonly string CacheFolder = Path.GetTempPath() + "\\ninMemApiData\\";
+
         public RavenHelper()
         {
         }
 
-        public FA3[] GetFa3s(string url = "http://mendel.itea.ntnu.no:8183", string database = "FAB3DRIFT")
+        public FA3[] GetFa3s(string url = "http://it-webadb03.it.ntnu.no:8181", string database = "FAB3DRIFT")
         {
-            const string cacheDirectoryPath = "Data\\FA3s";
+            var cacheDirectoryPath = CacheFolder + "FA3s";
             var fa3s = ReadFromCache<FA3>(cacheDirectoryPath);
 
             if (fa3s != null)
@@ -26,9 +28,9 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
             return GetEntities<FA3>(url, database, cacheDirectoryPath: cacheDirectoryPath);
         }
 
-        public Taxon[] GetTaxons(string url = "http://mendel.itea.ntnu.no:8182", string database = "Databank1_J17")
+        public Taxon[] GetTaxons(string url = "http://it-webadb03.it.ntnu.no:8181", string database = "Databank1")
         {
-            const string cacheDirectoryPath = "Data\\Taxons";
+            var cacheDirectoryPath = CacheFolder + "Taxons";
             var taxons = ReadFromCache<Taxon>(cacheDirectoryPath);
 
             if (taxons != null)
@@ -68,6 +70,10 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 
         private T[] GetEntities<T>(string url, string database, string cacheDirectoryPath = null)
         {
+            if(string.IsNullOrWhiteSpace(cacheDirectoryPath)) throw new DirectoryNotFoundException();
+
+            if (!Directory.Exists(cacheDirectoryPath)) Directory.CreateDirectory(cacheDirectoryPath);
+
             var list = new List<T>();
 
             using (IDocumentStore store = new DocumentStore
@@ -108,10 +114,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
                             break;
                         }
 
-                        if (!string.IsNullOrWhiteSpace(cacheDirectoryPath))
-                        {
-                            File.WriteAllText($"{cacheDirectoryPath}\\{start}.json", JsonConvert.SerializeObject(current));
-                        }
+                        File.WriteAllText($"{cacheDirectoryPath}\\{start}.json", JsonConvert.SerializeObject(current));
 
                         start += current.Count;
 

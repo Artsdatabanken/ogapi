@@ -13,32 +13,36 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using NinMemApi.Data.Stores.Local;
 
 namespace NinMemApi.DataPreprocessing
 {
-    internal class Program
+    public class Program
     {
+        private static IConfigurationRoot _configuration;
+
         private static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-               .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string ninConnectionString = configuration.GetConnectionString("Nin");
-            string artsdbconnectionString = configuration.GetConnectionString("artsdbstorage");
-            string urlAlleKoder = configuration["UrlAlleKoder"];
-            string urlVariasjoner = configuration["UrlVariasjon"];
-
-            UploadDataToAzure(ninConnectionString, artsdbconnectionString, urlAlleKoder, urlVariasjoner).Wait();
-
-            Console.WriteLine("Done ...");
-            Console.ReadKey();
+            Run();
         }
 
-        private static async Task UploadDataToAzure(string ninConnectionString, string artsdbconnectionString, string urlAlleKoder, string urlVariasjoner)
+        public static void Run()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
+
+            _configuration = builder.Build();
+
+            var ninConnectionString = _configuration.GetConnectionString("Nin");
+            var urlAlleKoder = _configuration["UrlAlleKoder"];
+            var urlVariasjoner = _configuration["UrlVariasjon"];
+
+            StoreData(ninConnectionString, urlAlleKoder, urlVariasjoner).Wait();
+        }
+
+        private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner)
         {
             var koder = GetKoder(urlAlleKoder, urlVariasjoner);
 
@@ -48,24 +52,30 @@ namespace NinMemApi.DataPreprocessing
             var redlistData = await RedlistLoader.Load(ninConnectionString);
             var geographicalData = await GeographicalAreaLoader.Load(ninConnectionString);
             var taxons = TaxonLoader.Get();
-            var codetree = File.ReadAllText("..\\..\\..\\Data\\kodetre.json");
+            var codetree = new WebClient().DownloadString("https://adb-typesystem.surge.sh/kodetre.json");
             var natureAreaVariables = await NatureAreaVariablesLoader.Load(ninConnectionString);
-            var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
+            //// TODO: uncomment this when TaxonTraits is back
+            //var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
 
-            var azureStorage = new AzureStorage(new ArtsdbStorageConnectionString { ConnectionString = artsdbconnectionString });
+            var ninMemApiDataLocation = _configuration["NinMemApiData"];
+
+            if(!Directory.Exists(ninMemApiDataLocation)) throw new DirectoryNotFoundException("Directory given in appsettings.json for \"NinMemApiData\" not found");
+
+            var localStorage = new LocalStorage(ninMemApiDataLocation);
 
             await Task.WhenAll(
-                    azureStorage.Store(StorageKeys.NatureAreas, natureAreas, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaDescriptionVariables, descriptionVariables, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaTypes, natureAreaTypes, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaRedlistCategories, redlistData.categories, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaRedlistThemes, redlistData.themes, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaGeographicalAreaData, geographicalData, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.Taxons, taxons.Values.ToList(), containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.CodeTree, codetree, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.NatureAreaVariables, natureAreaVariables, containerName: StorageConstants.GraphContainerName),
-                    azureStorage.Store(StorageKeys.TaxonTraits, taxonTraits, containerName: StorageConstants.GraphContainerName)
-                );
+                localStorage.Store(StorageKeys.NatureAreas, natureAreas),
+                localStorage.Store(StorageKeys.NatureAreaDescriptionVariables, descriptionVariables),
+                localStorage.Store(StorageKeys.NatureAreaTypes, natureAreaTypes),
+                localStorage.Store(StorageKeys.NatureAreaRedlistCategories, redlistData.categories),
+                localStorage.Store(StorageKeys.NatureAreaRedlistThemes, redlistData.themes),
+                localStorage.Store(StorageKeys.NatureAreaGeographicalAreaData, geographicalData),
+                localStorage.Store(StorageKeys.Taxons, taxons.Values.ToList()),
+                localStorage.Store(StorageKeys.CodeTree, codetree),
+                localStorage.Store(StorageKeys.NatureAreaVariables, natureAreaVariables)
+                //// TODO: uncomment this when TaxonTraits is back
+                //localStorage.Store(StorageKeys.TaxonTraits, taxonTraits)
+            );
         }
 
         private static (List<KodeInstans> alleKoder, List<KodeInstans> variasjonKoder) GetKoder(string urlAlleKoder, string urlVariasjoner)
