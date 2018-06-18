@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NinMemApi.Data;
-using NinMemApi.Data.Interfaces;
 using NinMemApi.Data.Models;
 using NinMemApi.Data.Stores.Azure;
 using NinMemApi.GraphDb;
@@ -15,6 +14,7 @@ using System;
 using System.IO;
 using System.Net;
 using NinMemApi.Data.Stores.Local;
+using NinMemApi.Data.Stores.Web;
 
 namespace NinMemApi
 {
@@ -51,19 +51,9 @@ namespace NinMemApi
                     });
             services.AddCors();
 
-            var graphInputGetter = new GraphInputGetter(new LocalStorage());
-            GraphInput graphInput;
+            var graphInputGetter = new GraphInputGetter(new WebStorage(Configuration["NinMemApiData"]));
 
-            try
-            {
-                graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
-            }
-            catch (Exception e)
-            {
-                DataPreprocessing.Program.Run();
-
-                graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
-            }
+            var graphInput = graphInputGetter.Get().GetAwaiter().GetResult();
 
             G g = new G();
             GraphBuilder.Build(g, graphInput);
