@@ -33,7 +33,6 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NinMemApi.DataPreprocessing\NinMemApi.DataPreprocessing.csproj" />
     <ProjectReference Include="..\NinMemApi.Data\NinMemApi.Data.csproj" />
   </ItemGroup>
   <!--<Target Name="CopyDtoFilesOnBuild" AfterTargets="Build">
