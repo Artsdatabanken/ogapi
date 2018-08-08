@@ -3,9 +3,9 @@ using NinMemApi.Data.Models;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders
 {
@@ -14,14 +14,14 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
         public static async Task<List<DescriptionVariable>> Load(string connectionString, Codes descriptionVariableCodes)
         {
             const string descriptionVariableSql =
-                @"SELECT bv.kode AS DvCode, nomt.kode AS NatCode, bv.naturområde_id AS NatureAreaId, nomt.andel AS NatureAreaPercentage
-                    FROM Beskrivelsesvariabel bv
-                    JOIN Naturområdetype nomt ON nomt.id = bv.naturområdetype_id
-                    GROUP BY bv.kode, nomt.kode, bv.naturområde_id, nomt.andel";
+                @"SELECT bv.code AS DvCode, nomt.code AS NatCode, bv.geometry_id AS NatureAreaId, nomt.fraction AS NatureAreaPercentage
+                    FROM data.codes_geometry bv, data.codes_geometry nomt
+                    WHERE bv.geometry_id = nomt.geometry_id and bv.code like 'BS_%' and nomt.code like 'NA_%'
+                    GROUP BY bv.code, nomt.code, bv.geometry_id, nomt.fraction";
 
             IEnumerable<DescriptionVariableDto> descriptionVariableDtos;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -35,9 +35,11 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             {
                 var codes = dto.DvCode.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
+                dto.DvCode = dto.DvCode.Remove(0,3);
+
                 foreach (var code in codes)
                 {
-                    if (!descriptionVariableCodes.Contains(dto.DvCode))
+                    if (!descriptionVariableCodes.Contains(dto.DvCode.ToUpper()))
                     {
                         // Ignored code as it doesn't exist in the code file.
                         continue;

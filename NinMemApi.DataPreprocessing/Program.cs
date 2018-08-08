@@ -100,8 +100,8 @@ namespace NinMemApi.DataPreprocessing
 
             foreach (var instans in kodeinstanser)
             {
-                instans.Kode.Id = instans.Kode.Id.Replace(" ", "_");
-                instans.OverordnetKode.Id = instans.OverordnetKode.Id?.Replace(" ", "_");
+                instans.Kode.Id = instans.Kode.Id.Replace(" ", "_").ToUpper();
+                instans.OverordnetKode.Id = instans.OverordnetKode.Id?.Replace(" ", "_").ToUpper();
             }
 
             return kodeinstanser;
