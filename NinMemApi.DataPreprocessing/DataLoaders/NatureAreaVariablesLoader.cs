@@ -3,9 +3,9 @@ using NinMemApi.Data.Models;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders
 {
@@ -40,14 +40,16 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
         private static async Task AddDescriptionVariables(string connectionString, Dictionary<(int, string), NatureAreaVariables> dict)
         {
             const string descriptionVariableSql =
-                            @"SELECT bv.kode AS DvCode, nomt.kode AS NatCode, bv.naturområde_id AS NatureAreaId
-                    FROM Beskrivelsesvariabel bv
-                    JOIN Naturområdetype nomt ON nomt.id = bv.naturområdetype_id
-                    GROUP BY bv.kode, nomt.kode, bv.naturområde_id";
+                            @"SELECT bv.code AS DvCode, nomt.code AS NatCode, bv.geometry_id AS NatureAreaId
+                    FROM data.codes_geometry bv, data.codes_geometry nomt
+                    WHERE nomt.geometry_id = bv.geometry_id
+                    AND nomt.code LIKE 'NA_%'
+                    AND bv.code LIKE 'BS_%'
+                    GROUP BY bv.code, nomt.code, bv.geometry_id";
 
             IEnumerable<DescriptionVariableDto> descriptionVariableDtos;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -72,12 +74,12 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
         private static async Task<Dictionary<(int, string), NatureAreaVariables>> GetDict(string connectionString)
         {
             const string natureAreaTypeCodeSql =
-            @"SELECT nat.naturområde_id AS NatureAreaId, nat.kode AS Code, nat.andel AS Percentage, nat.kartlagt AS Mapped
-FROM NaturområdeType nat";
+            @"SELECT nat.geometry_id AS NatureAreaId, nat.code AS Code, nat.fraction AS Percentage, null AS Mapped
+FROM data.codes_geometry nat where nat.code LIKE 'NA_%'";
 
             IEnumerable<NatureAreaTypeDto> natureAreaTypeDtos = null;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 
