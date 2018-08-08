@@ -3,9 +3,9 @@ using NinMemApi.Data.Models;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders
 {
@@ -14,13 +14,14 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
         public static async Task<List<NatureAreaType>> Load(string connectionString, Codes codes)
         {
             const string natureAreaTypeCodeSql =
-@"SELECT nat.naturområde_id AS NatureAreaId, nat.kode AS Code, nat.andel AS Percentage
-FROM NaturområdeType nat
-GROUP BY nat.naturområde_id, nat.kode, nat.andel";
+@"SELECT nat.geometry_id AS NatureAreaId, nat.code AS Code, nat.fraction AS Percentage
+FROM data.codes_geometry nat
+WHERE nat.code LIKE 'NA_%'
+GROUP BY nat.geometry_id, nat.code, nat.fraction";
 
             IEnumerable<NatureAreaTypeDto> dtos = null;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 
