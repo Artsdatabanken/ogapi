@@ -73,6 +73,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
 
         private static async Task<Dictionary<(int, string), NatureAreaVariables>> GetDict(string connectionString)
         {
+            // TODO: Add in mapped if we get it in the database
             const string natureAreaTypeCodeSql =
             @"SELECT nat.geometry_id AS NatureAreaId, nat.code AS Code, nat.fraction AS Percentage, null AS Mapped
 FROM data.codes_geometry nat where nat.code LIKE 'NA_%'";
