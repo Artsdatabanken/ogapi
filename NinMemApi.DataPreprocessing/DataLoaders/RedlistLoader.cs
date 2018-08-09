@@ -2,90 +2,82 @@
 using NinMemApi.Data.Models;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Npgsql;
+using Newtonsoft.Json;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders
 {
     public static class RedlistLoader
     {
-        public static async Task<(List<RedlistCategory> categories, List<RedlistTheme> themes)> Load(string connectionString)
+        public static async Task<(List<RedlistCategory> categories, List<RedlistTheme> themes)> Load(
+            string connectionString, string redList)
         {
-            const string redlistSql = "SELECT rlk.naturområde_id AS NatureAreaId, rlk.rødlistevurderingsenhet_id AS AssessmentUnitId, rlk.kategori_id AS CategoryId FROM Rødlistekategori rlk";
             const string redlistCategorySql =
- @"SELECT no.id AS NatureAreaId, rlk.kategori_id AS CategoryId, rlkt.verdi AS CategoryName
-FROM Rødlistekategori rlk
-JOIN KategoriSet rlkt ON rlkt.Id = rlk.kategori_id
-JOIN NaturOmråde no ON no.id = rlk.naturområde_id";
-            const string redlistAssessmentUnitSql =
- @"SELECT no.id AS NatureAreaId, rlk.rødlistevurderingsenhet_id AS AssessmentUnitId, rlvt.verdi AS AssessmentUnitName, rlvt.Tema_Id AS ThemeId, rltt.verdi AS ThemeName
-FROM Rødlistekategori rlk
-JOIN RødlisteVurderingsenhetSet rlvt ON rlvt.Id = rlk.rødlistevurderingsenhet_id
-JOIN TemaSet rltt ON rltt.Id = rlvt.Tema_Id
-JOIN NaturOmråde no ON no.id = rlk.naturområde_id";
+ @"SELECT c_g.geometry_id AS NatureAreaId, c.id AS CategoryId, c.code AS CategoryName
+FROM data.codes_geometry c_g, data.codes c
+WHERE c.code like 'RL_%'
+AND c.id = c_g.codes_id";
 
-            IEnumerable<RedlistDto> redlistDtos = null;
             IEnumerable<RedlistCategoryDto> redlistCategoryDtos = null;
-            IEnumerable<RedlistAssessmentUnitDto> redlistAssessmentUnitDtos = null;
 
-            using (var conn = new SqlConnection(connectionString))
-            using (var conn2 = new SqlConnection(connectionString))
-            using (var conn3 = new SqlConnection(connectionString))
+            using (var conn2 = new NpgsqlConnection(connectionString))
             {
-                await Task.WhenAll(conn.OpenAsync(), conn2.OpenAsync(), conn3.OpenAsync());
+                await Task.WhenAll(conn2.OpenAsync());
 
-                var redlistDtosTask = conn.QueryAsync<RedlistDto>(redlistSql);
                 var redlistCategoryDtosTask = conn2.QueryAsync<RedlistCategoryDto>(redlistCategorySql);
-                var redlistAssessmentUnitDtosTask = conn3.QueryAsync<RedlistAssessmentUnitDto>(redlistAssessmentUnitSql);
 
-                await Task.WhenAll(redlistDtosTask, redlistCategoryDtosTask, redlistAssessmentUnitDtosTask);
+                await Task.WhenAll(redlistCategoryDtosTask); 
 
-                redlistDtos = redlistDtosTask.Result;
                 redlistCategoryDtos = redlistCategoryDtosTask.Result;
-                redlistAssessmentUnitDtos = redlistAssessmentUnitDtosTask.Result;
             }
 
             List<RedlistCategory> categories = MapCategories(redlistCategoryDtos);
-            List<RedlistTheme> themes = MapThemesAndAssessmentUnits(redlistAssessmentUnitDtos);
+            List<RedlistTheme> themes = MapThemesAndAssessmentUnits(redList);
 
             return (categories, themes);
         }
 
-        private static List<RedlistTheme> MapThemesAndAssessmentUnits(IEnumerable<RedlistAssessmentUnitDto> redlistAssessmentUnitDtos)
+        private static List<RedlistTheme> MapThemesAndAssessmentUnits(string redList)
         {
-            var dict = new Dictionary<int, RedlistTheme>();
+            var themes = new List<RedlistTheme>();
 
-            foreach (var dto in redlistAssessmentUnitDtos)
+            dynamic json = JsonConvert.DeserializeObject<List<ExpandoObject>>(
+                new WebClient().DownloadString(redList));
+
+            var id = 0;
+            foreach (var tema in json)
             {
-                if (!dict.TryGetValue(dto.ThemeId, out var theme))
+                var redlistTheme = new RedlistTheme
                 {
-                    theme = new RedlistTheme
-                    {
-                        Id = dto.ThemeId,
-                        Name = dto.ThemeName
-                    };
+                    AssessmentUnits = new List<RedlistAssessmentUnit>(),
+                    Id = id++,
+                    Name = tema.Navn
+                };
 
-                    dict.Add(dto.ThemeId, theme);
+                foreach (var vurderingsenhet in tema.VurderingsEnheter)
+                {
+                    var naturområder = new HashSet<int>();
+
+                    foreach (var regel in vurderingsenhet.Regler)
+                    foreach (var naturområde in regel.Naturområder)
+                        naturområder.Add(int.Parse(naturområde));
+
+                    redlistTheme.AssessmentUnits.Add(new RedlistAssessmentUnit
+                    {
+                        Id = id++,
+                        Name = vurderingsenhet.Navn,
+                        NatureAreaIds = naturområder
+                    });
                 }
 
-                var assessmentUnit = theme.AssessmentUnits.FirstOrDefault(au => au.Id == dto.AssessmentUnitId);
-
-                if (assessmentUnit == null)
-                {
-                    assessmentUnit = new RedlistAssessmentUnit
-                    {
-                        Id = dto.AssessmentUnitId,
-                        Name = dto.AssessmentUnitName
-                    };
-
-                    theme.AssessmentUnits.Add(assessmentUnit);
-                }
-
-                assessmentUnit.NatureAreaIds.Add(dto.NatureAreaId);
+                themes.Add(redlistTheme);
             }
 
-            return dict.Values.ToList();
+            return themes;
         }
 
         private static List<RedlistCategory> MapCategories(IEnumerable<RedlistCategoryDto> redlistCategoryDtos)
@@ -99,7 +91,7 @@ JOIN NaturOmråde no ON no.id = rlk.naturområde_id";
                     category = new RedlistCategory
                     {
                         Id = dto.CategoryId,
-                        Name = dto.CategoryName
+                        Name = dto.CategoryName.Remove(0, 3)
                     };
 
                     dict.Add(dto.CategoryId, category);

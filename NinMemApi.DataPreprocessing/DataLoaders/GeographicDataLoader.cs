@@ -3,9 +3,9 @@ using NinMemApi.Data.Models;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders
 {
@@ -14,13 +14,26 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
         public static async Task<GeographicalAreaData> Load(string connectionString)
         {
             const string geographicalAreaSql =
-                @"SELECT ol.naturområde_id AS NatureAreaId, o.geometriType_id AS GeometryTypeId, o.nummer AS Number, o.navn AS Name, o.kategori AS Category
-                    FROM Område o
-                    LEFT JOIN OmrådeLink ol ON ol.geometri_id = o.id";
+                @"SELECT 
+                    g2.id AS NatureAreaId, c_g.code AS Number, c.title AS Name, '' AS Category
+                    FROM 
+                    data.codes_geometry c_g, 
+                    data.codes_geometry c_g2, 
+                    data.codes c, 
+                    data.geometry g, 
+                    data.geometry g2
+                    WHERE 
+                    c_g.codes_id = c.id
+                    AND c_g.geometry_id = g.id
+                    AND (c_g.code LIKE 'AO_%' OR c_g.code LIKE 'VV_%')
+                    AND c_g2.geometry_id = g2.id
+                    AND (c_g2.code LIKE 'NA_%')
+                    AND ST_Intersects(g.geography, g2.geography)
+                    ORDER by c_g.code";
 
             IEnumerable<GeographicalAreaDto> geographicalAreaDtos = null;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -32,22 +45,22 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
 
             foreach (var dto in geographicalAreaDtos)
             {
-                switch (dto.GeometryTypeId)
+                dto.Category = dto.Number.Substring(0, 2);
+                dto.Number = dto.Number.Remove(0, 3).Replace("-", "");
+                
+                switch (dto.Category)
                 {
-                    case 1:
-                        MapEntityMunicipality(dto, counties);
+                    case "AO":
+                        if(int.Parse(dto.Number) < 100)  MapEntityCounty(dto, counties);
+                        else MapEntityMunicipality(dto, counties);
                         break;
 
-                    case 2:
-                        MapEntityCounty(dto, counties);
-                        break;
-
-                    case 3:
+                    case "VV":
                         MapEntityConservationArea(dto, conservationAreaCategories);
                         break;
 
                     default:
-                        throw new Exception($"Unexpected geometryTypeId: { dto.GeometryTypeId }");
+                        throw new Exception($"Unexpected Category: { dto.Category }");
                 }
             }
 
@@ -60,16 +73,16 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
 
         private static void MapEntityMunicipality(GeographicalAreaDto dto, List<County> counties)
         {
-            int countyNo = dto.Number / 100;
+            int countyNo = int.Parse(dto.Number) / 100;
             var county = counties.Single(na => na.Number == countyNo);
 
-            var municipality = county.Municipalities.FirstOrDefault(m => m.Number == dto.Number);
+            var municipality = county.Municipalities.FirstOrDefault(m => m.Number == int.Parse(dto.Number));
 
             if (municipality == null)
             {
                 municipality = new Municipality
                 {
-                    Number = dto.Number,
+                    Number = int.Parse(dto.Number),
                     Name = dto.Name
                 };
 
@@ -84,13 +97,13 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
 
         private static void MapEntityCounty(GeographicalAreaDto dto, List<County> counties)
         {
-            var county = counties.FirstOrDefault(na => na.Number == dto.Number);
+            var county = counties.FirstOrDefault(na => na.Number == int.Parse(dto.Number));
 
             if (county == null)
             {
                 county = new County
                 {
-                    Number = dto.Number,
+                    Number = int.Parse(dto.Number),
                     Name = dto.Name
                 };
 
@@ -113,13 +126,13 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
                 conservationAreaCategories.Add(conservationAreaCategory);
             }
 
-            var conservationArea = conservationAreaCategory.ConservationAreas.FirstOrDefault(c => c.Number == dto.Number);
+            var conservationArea = conservationAreaCategory.ConservationAreas.FirstOrDefault(c => c.Number ==int.Parse( dto.Number));
 
             if (conservationArea == null)
             {
                 conservationArea = new ConservationArea
                 {
-                    Number = dto.Number,
+                    Number = int.Parse(dto.Number),
                     Name = dto.Name
                 };
 

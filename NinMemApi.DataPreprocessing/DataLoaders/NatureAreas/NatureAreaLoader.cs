@@ -1,9 +1,9 @@
 ﻿using Dapper;
 using NinMemApi.DataPreprocessing.DataLoaders.Dtos;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders.NatureAreas
 {
@@ -11,11 +11,11 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.NatureAreas
     {
         public static async Task<List<NatureAreaDto>> Load(string connectionString)
         {
-            const string sql = "SELECT id AS Id, geometri.STArea() AS Area, geometri.STEnvelope().STAsText() AS Envelope FROM Naturområde";
+            const string sql = "SELECT id AS Id, ST_Area(g.geography) AS Area, ST_AsText(ST_Envelope(g.geography::geometry)) AS Envelope FROM data.geometry g";
 
             List<NatureAreaDto> natureAreaDtos = null;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
 

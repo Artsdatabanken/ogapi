@@ -19,12 +19,13 @@
   <ItemGroup>
     <PackageReference Include="Dapper.Contrib" Version="1.50.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Npgsql" Version="4.0.2" />
     <PackageReference Include="RavenDB.Client" Version="3.5.5" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NinMemApi.Data\NinMemApi.Data.csproj" />
-    <ProjectReference Include="..\NinMemApi.GraphDb\NinMemApi.GraphDb.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Data\**" />
