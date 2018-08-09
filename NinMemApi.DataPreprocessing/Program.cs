@@ -38,18 +38,20 @@ namespace NinMemApi.DataPreprocessing
             var ninConnectionString = _configuration.GetConnectionString("Nin");
             var urlAlleKoder = _configuration["UrlAlleKoder"];
             var urlVariasjoner = _configuration["UrlVariasjon"];
+            var redList = _configuration["RedList"];
 
-            StoreData(ninConnectionString, urlAlleKoder, urlVariasjoner).Wait();
+            StoreData(ninConnectionString, urlAlleKoder, urlVariasjoner, redList).Wait();
         }
 
-        private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner)
+        private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner,
+            string redList)
         {
             var koder = GetKoder(urlAlleKoder, urlVariasjoner);
 
             var natureAreas = await DataLoaders.NatureAreas.NatureAreaLoader.Load(ninConnectionString);
             var descriptionVariables = await DescriptionVariableLoader.Load(ninConnectionString, Codes.Create(koder.variasjonKoder));
             var natureAreaTypes = await NatureAreaTypeLoader.Load(ninConnectionString, Codes.Create(koder.alleKoder));
-            var redlistData = await RedlistLoader.Load(ninConnectionString);
+            var redlistData = await RedlistLoader.Load(ninConnectionString, redList);
             var geographicalData = await GeographicalAreaLoader.Load(ninConnectionString);
             var taxons = TaxonLoader.Get();
             var codetree = new WebClient().DownloadString("https://adb-typesystem.surge.sh/kodetre.json");
@@ -73,8 +75,8 @@ namespace NinMemApi.DataPreprocessing
                 localStorage.Store(StorageKeys.Taxons, taxons.Values.ToList()),
                 localStorage.Store(StorageKeys.CodeTree, codetree),
                 localStorage.Store(StorageKeys.NatureAreaVariables, natureAreaVariables)
-                //// TODO: uncomment this when TaxonTraits is back
-                //localStorage.Store(StorageKeys.TaxonTraits, taxonTraits)
+            //// TODO: uncomment this when TaxonTraits is back
+            //localStorage.Store(StorageKeys.TaxonTraits, taxonTraits)
             );
         }
 
