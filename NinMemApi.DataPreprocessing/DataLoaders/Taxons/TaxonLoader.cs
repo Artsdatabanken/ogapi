@@ -5,13 +5,13 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 {
     public static class TaxonLoader
     {
-        public static Dictionary<int, Data.Models.Taxon> Get()
+        public static Dictionary<int, Data.Models.Taxon> Get(string ninConnectionString)
         {
             var ravenHelper = new RavenHelper();
             var fa3s = ravenHelper.GetFa3s();
             var ravenTaxons = ravenHelper.GetTaxons();
 
-            var taxonSqlData = new ArtSqlHelper().Get();
+            var taxonSqlData = new ArtSqlHelper(ninConnectionString).Get();
             var taxonDict = new Dictionary<int, Data.Models.Taxon>();
 
             var taxonIdToScientificNameId = new Dictionary<int, int>();
@@ -22,11 +22,11 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
             {
                 var taxon = new Data.Models.Taxon
                 {
-                    ParentScientificNameId = sqlData.ParentScientificNameId,
+                    ParentScientificNameId = int.Parse(sqlData.ParentScientificNameId.Remove(0,3)),
                     PopularName = sqlData.PopularName,
                     ScientificName = sqlData.ScientificName,
-                    ScientificNameId = sqlData.ScientificNameId,
-                    TaxonId = sqlData.TaxonId,
+                    ScientificNameId = int.Parse(sqlData.ScientificNameId.Remove(0,3)),
+                    TaxonId = int.Parse(sqlData.TaxonId.Remove(0,3)),
                     EastNorths = sqlData.EastNorths.Select(ll => new[] { ll.east, ll.north }).ToArray(),
                     Municipalities = sqlData.Municipalities.ToArray(),
                     ConservationAreas = sqlData.ConservationAreas.ToArray()

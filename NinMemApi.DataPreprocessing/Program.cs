@@ -53,7 +53,7 @@ namespace NinMemApi.DataPreprocessing
             var natureAreaTypes = await NatureAreaTypeLoader.Load(ninConnectionString, Codes.Create(koder.alleKoder));
             var redlistData = await RedlistLoader.Load(ninConnectionString, redList);
             var geographicalData = await GeographicalAreaLoader.Load(ninConnectionString);
-            var taxons = TaxonLoader.Get();
+            var taxons = TaxonLoader.Get(ninConnectionString);
             var codetree = new WebClient().DownloadString("https://adb-typesystem.surge.sh/kodetre.json");
             var natureAreaVariables = await NatureAreaVariablesLoader.Load(ninConnectionString);
             //// TODO: uncomment this when TaxonTraits is back
