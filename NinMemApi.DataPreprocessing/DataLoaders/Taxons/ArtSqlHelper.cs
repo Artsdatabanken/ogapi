@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
+using Npgsql;
 
 namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 {
@@ -9,80 +9,81 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
     {
         private readonly string _connectionString;
 
-        public ArtSqlHelper(string connectionString = "Initial Catalog=Artskart2Index;Server=.;Integrated Security=true;")
+        public ArtSqlHelper(string connectionString)
         {
             _connectionString = connectionString;
         }
 
         public TaxonSqlData[] Get()
         {
-            const string sql =
-                @"SELECT t.Id AS TaxonId, p.ValidScientificNameId AS ParentScientificNameId, t.ValidScientificName AS ScientificName,
-	                t.ValidScientificNameId AS ScientificNameId, t.PrefferedPopularname AS PopularName
-	                FROM Taxon t
-	                LEFT JOIN Taxon p ON p.Id = t.ParentTaxonId";
+            const string sql =@"SELECT 
+	s.code AS TaxonId, 
+	ch.predecessor AS ParentScientificNameId, 
+	s.title AS ScientificName,
+	s.code AS ScientificNameId, 
+	s.title AS PopularName
+FROM 
+	data.codeshierarchy ch, 
+	data.codes p, 
+	data.codes s
+WHERE 
+	ch.successor = s.code and 
+	ch.predecessor = p.code and 
+	p.level = s.level - 1 and
+	s.code like 'AR_%' and
+	p.code like 'AR_%'";
 
-            using (var conn = new SqlConnection(_connectionString))
+            using (var conn = new NpgsqlConnection(_connectionString))
             {
                 conn.Open();
 
                 var taxons = conn.Query<TaxonSqlData>(sql).ToArray();
 
-                var taxonDict = taxons.ToDictionary(t => t.TaxonId, t => t);
+                var taxonDict = taxons.ToDictionary(t => t.TaxonId.Remove(0,3), t => t);
 
-                var eastNorths = conn.Query<EastNorthDto>("SELECT t.Id AS TaxonId, o.East, o.North FROM Taxon t JOIN Observation o ON o.TaxonId = t.Id");
+                var eastNorths = conn.Query<EastNorthDto>("SELECT t.code AS TaxonId, st_X(st_centroid(st_transform(o.geography::geometry, 25833)))::integer as East, st_Y(st_centroid(st_transform(o.geography::geometry, 25833)))::integer as North FROM data.codes_geometry t JOIN data.geometry o ON o.id = t.geometry_id where t.code like 'AR_%'");
 
                 foreach (var eastNorth in eastNorths)
                 {
-                    var set = taxonDict[eastNorth.TaxonId].EastNorths;
+                    
+                    if (!taxonDict.ContainsKey(eastNorth.TaxonId.Remove(0, 3)))
+                        taxonDict[eastNorth.TaxonId.Remove(0, 3)] = new TaxonSqlData();
 
+                    var set = taxonDict[eastNorth.TaxonId.Remove(0,3)].EastNorths;
+                    
                     var tuple = (eastNorth.East, eastNorth.North);
 
                     set.Add(tuple);
                 }
 
-                //const string natureAreaConnectionSql =
-                //    @"SELECT t.Id AS TaxonId, nom.id AS NatureAreaId
-                //      FROM
-                //      [Artskart2Index].[dbo].[Taxon] t,
-                //      [Artskart2Index].[dbo].[Observation] obs,
-                //      [Artskart2Index].[dbo].[Location] loc,
-                //      [NiN_Init].[dbo].[Naturområde] nom
-                //      WHERE t.Id = obs.TaxonId AND obs.LocationId = loc.Id AND loc.Geometry.STWithin(nom.geometri) = 1";
+                var geographicalAreaConnectionSql = @"select 
+cg_art.code as TaxonId,
+cg_omr.code as Number
+                from 
+data.geometry art,
+data.geometry omr,
+data.codes_geometry cg_art,
+data.codes_geometry cg_omr
+where
+cg_art.code like 'AR_%' AND
+( cg_omr.code like 'VV_%' OR cg_omr.code like 'AO_%') AND
+art.id = cg_art.geometry_id AND
+omr.id = cg_omr.geometry_id AND
+st_intersects(art.geography, omr.geography)";
 
-                //var natureAreaConnections = conn.Query<TaxonNatureAreaConnectionDto>(natureAreaConnectionSql, commandTimeout: 2 * 60);
-
-                //foreach (var naConnection in natureAreaConnections)
-                //{
-                //    var set = taxonDict[naConnection.TaxonId].NatureAreas;
-
-                //    set.Add(naConnection.NatureAreaId);
-                //}
-
-                const string geographicalAreaConnectionSql =
-                    @"SELECT t.Id AS TaxonId, o.geometriType_id AS GeometryTypeId, o.nummer AS Number
-	                FROM
-	                [Artskart2Index].[dbo].[Taxon] t,
-	                [Artskart2Index].[dbo].[Observation] obs,
-	                [Artskart2Index].[dbo].[Location] loc,
-	                [NiN_Init].[dbo].[Område] o
-	                WHERE t.Id = obs.TaxonId AND obs.LocationId = loc.Id
-	                AND loc.Geometry.STIntersects(o.geometri) = 1
-	                AND (o.geometriType_id = 1 OR o.geometriType_id = 3)";
-
-                var geoAreaConnections = conn.Query<TaxonGeoAreaConnectionDto>(geographicalAreaConnectionSql, commandTimeout: 10 * 60);
+                var geoAreaConnections = conn.Query<TaxonGeoAreaConnectionDto>(geographicalAreaConnectionSql, commandTimeout: 24 * 60 * 60);
 
                 foreach (var geoAreaConnection in geoAreaConnections)
                 {
-                    var taxon = taxonDict[geoAreaConnection.TaxonId];
+                    var taxon = taxonDict[geoAreaConnection.TaxonId.Remove(0,3)];
 
-                    if (geoAreaConnection.GeometryTypeId == 1)
+                    if (geoAreaConnection.Number.StartsWith("AO_"))
                     {
-                        taxon.Municipalities.Add(geoAreaConnection.Number);
+                        taxon.Municipalities.Add(int.Parse(geoAreaConnection.Number.Remove(0,3).Replace("-","")));
                     }
                     else
                     {
-                        taxon.ConservationAreas.Add(geoAreaConnection.Number);
+                        taxon.ConservationAreas.Add(int.Parse(geoAreaConnection.Number.Remove(0,3)));
                     }
                 }
 
@@ -101,9 +102,9 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
             ConservationAreas = new HashSet<int>();
         }
 
-        public int TaxonId { get; set; }
-        public int ParentScientificNameId { get; set; }
-        public int ScientificNameId { get; set; }
+        public string TaxonId { get; set; }
+        public string ParentScientificNameId { get; set; }
+        public string ScientificNameId { get; set; }
         public string ScientificName { get; set; }
         public string PopularName { get; set; }
         public HashSet<(int east, int north)> EastNorths { get; set; }
@@ -114,7 +115,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 
     public class EastNorthDto
     {
-        public int TaxonId { get; set; }
+        public string TaxonId { get; set; }
         public int East { get; set; }
         public int North { get; set; }
     }
@@ -127,8 +128,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
 
     public class TaxonGeoAreaConnectionDto
     {
-        public int TaxonId { get; set; }
-        public int GeometryTypeId { get; set; }
-        public int Number { get; set; }
+        public string TaxonId { get; set; }
+        public string Number { get; set; }
     }
 }
