@@ -11,7 +11,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.NatureAreas
     {
         public static async Task<List<NatureAreaDto>> Load(string connectionString)
         {
-            const string sql = "SELECT id AS Id, ST_Area(g.geography) AS Area, ST_AsText(ST_Envelope(g.geography::geometry)) AS Envelope FROM data.geometry g";
+            const string sql = "SELECT id AS Id, ST_Area(g.geography) AS Area, ST_AsText(ST_Envelope(st_transform(g.geography::geometry, 25833))) AS Envelope FROM data.geometry g";
 
             List<NatureAreaDto> natureAreaDtos = null;
 
