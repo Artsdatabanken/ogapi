@@ -1,4 +1,6 @@
-﻿namespace NinMemApi.Data.Models
+﻿using System;
+
+namespace NinMemApi.Data.Models
 {
     public static class CodePrefixes
     {
@@ -135,12 +137,17 @@
 
         public static string GetDescriptionOrEnvironmentVariableCode(string code)
         {
-            return char.IsDigit(code[0]) ? GetDescriptionVariableCode(code) : GetEnvironmentVariableCode(code);
+            return Char.IsDigit(code[0]) ? GetDescriptionVariableCode(code) : GetEnvironmentVariableCode(code);
         }
 
         private static string Format<T>(string prefix, T value)
         {
             return $"{prefix}_{value}".Replace(" ", "_").ToLower();
+        }
+
+        public static string GetCodeForAdministrativeUnits(int id)
+        {
+            return id < 10 ? "ao_0" + id : id < 1000 ? "ao_0" + id.ToString()[0] + "-" + id.ToString().Remove(0, 1) : "ao_" + id.ToString().Remove(2) + "-" + id.ToString().Remove(0, 2);
         }
     }
 }

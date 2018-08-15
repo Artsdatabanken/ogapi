@@ -33,12 +33,28 @@ namespace NinMemApi.Data
 
         private static Envelope ReadWkt(string wkt)
         {
-            var wktSplit = wkt.Split("((")[1];
-            wktSplit = wktSplit.Split("))")[0];
+            if (wkt.Contains("EMPTY")) return new Envelope();
+
+            string wktSplit;
+            if (!wkt.Contains("POLYGON"))
+            {
+                wktSplit = wkt.Split("(")[1];
+                wktSplit = wktSplit.Split(")")[0];
+            }
+            else
+            {
+                wktSplit = wkt.Split("((")[1];
+                wktSplit = wktSplit.Split("))")[0];
+            }
+
             var coordinatesString = wktSplit.Split(',');
 
+            var maxInt = 2;
+            if (wkt.Contains("POINT")) maxInt = 0;
+            if (wkt.Contains("LINESTRING")) maxInt = 1;
+
             var min = GetCoordinates(coordinatesString[0]);
-            var max = GetCoordinates(coordinatesString[2]);
+            var max = GetCoordinates(coordinatesString[maxInt]);
 
             return new Envelope(min[0], min[1], max[0], max[1]);
         }

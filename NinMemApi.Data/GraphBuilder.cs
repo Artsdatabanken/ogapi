@@ -153,8 +153,6 @@ namespace NinMemApi.Data
                 }
             }
 
-            var aaOldNumberToCodeMapping = new Dictionary<int, string>();
-
             foreach (var county in input.NatureAreaGeographicalAreaData.Counties)
             {
                 foreach (var municipality in county.Municipalities)
@@ -183,7 +181,6 @@ namespace NinMemApi.Data
                     }
 
                     var aaCode = aaNumberDict.ContainsKey(municipality.Number) ? aaNumberDict[municipality.Number] : aaNameDict[name];
-                    aaOldNumberToCodeMapping.Add(municipality.Number, aaCode);
 
                     var municipalityVertex = g.V(aaCode);
 
@@ -222,7 +219,7 @@ namespace NinMemApi.Data
 
                 if (!g.TryGetV(code, out var vertex))
                 {
-                    vertex = CreateTaxonVertex(g, taxon, code, aaOldNumberToCodeMapping, taxonsFromCodeTree, taxonTraitsDict);
+                    vertex = CreateTaxonVertex(g, taxon, code, taxonsFromCodeTree, taxonTraitsDict);
                 }
 
                 if (vertex.Parent != null)
@@ -255,7 +252,7 @@ namespace NinMemApi.Data
                         }
                         else
                         {
-                            var parentVertex = CreateTaxonVertex(g, parent, parentCode, aaOldNumberToCodeMapping, taxonsFromCodeTree, taxonTraitsDict);
+                            var parentVertex = CreateTaxonVertex(g, parent, parentCode, taxonsFromCodeTree, taxonTraitsDict);
                             currentVertex.AddE(EL.Child, parentVertex);
 
                             parentScientificNameId = parent.ParentScientificNameId;
@@ -308,8 +305,7 @@ namespace NinMemApi.Data
             G g,
             Taxon taxon,
             string code,
-            Dictionary<int, string> aaOldNumberToCodeMapping,
-            IDictionary<string, CodeTreeNode> taxonsFromCodeTree,
+            IDictionary<string, CodeTreeNode> taxonsFromCodeTree, 
             IDictionary<string, TaxonTraits> taxonTraitsDict)
         {
             var taxonFromCodeTree = taxonsFromCodeTree[code.ToLower()];
@@ -333,12 +329,14 @@ namespace NinMemApi.Data
             }
 
             LinkTaxonVertex(g, vertex, taxon.NatureAreaTypeCodes.ToArray(), (id) => id);
-            LinkTaxonVertex(g, vertex, taxon.RedlistCategories, (id) => CodePrefixes.GetRedlistCategoryCode(id));
-            LinkTaxonVertex(g, vertex, taxon.Municipalities, (id) => aaOldNumberToCodeMapping[id]);
-            LinkTaxonVertex(g, vertex, taxon.ConservationAreas, (id) => CodePrefixes.GetConservationAreaCode(id));
+            LinkTaxonVertex(g, vertex, taxon.RedlistCategories, CodePrefixes.GetRedlistCategoryCode);
+            LinkTaxonVertex(g, vertex, taxon.Municipalities, CodePrefixes.GetCodeForAdministrativeUnits);
+            LinkTaxonVertex(g, vertex, taxon.ConservationAreas, CodePrefixes.GetConservationAreaCode);
 
             return vertex;
         }
+
+
 
         private static void HandleTaxonTraits(G g, Vertex taxonVertex, TaxonTraits taxonTraits)
         {
