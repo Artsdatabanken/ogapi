@@ -109,14 +109,14 @@ namespace NinMemApi
             var rewriteOptions = new RewriteOptions()
                 .AddRedirect(@"^$", "swagger", (int)HttpStatusCode.Redirect);
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                rewriteOptions = rewriteOptions.AddRedirectToHttps();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
+            //else
+            //{
+            //    rewriteOptions = rewriteOptions.AddRedirectToHttps();
+            //}
 
             app.UseRewriter(rewriteOptions);
 
