@@ -4,10 +4,11 @@ dotnet: 2.1.300
 script:
  - dotnet build
  - dotnet test Trees.Tests
- - dotnet publish
+before_install:
+ - docker build --tag artsdatabanken/ninmemapi .
 deploy:
- - provider: pages
-   local-dir: NinMemApi/bin/Debug/netcoreapp2.1/publish/
-   skip-cleanup: true
-   github-token: $GITHUB_API_KEY  # Set in the settings page of your repository, as a secure variable
-   keep-history: false
+  skip_cleanup: true
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
