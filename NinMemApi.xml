@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NinMemApi</name>
+    </assembly>
+    <members>
+        <member name="T:NinMemApi.Controllers.KoderController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Controllers.KoderController.#ctor(NinMemApi.Data.CodeSearch)">
+            <summary>
+            </summary>
+            <param name="codeSearch"></param>
+        </member>
+        <member name="M:NinMemApi.Controllers.KoderController.Filtered(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Returnerer koder for fritekstsøk.
+            </summary>
+            <param name="q">Mellomromseparert fritekstsøk. Minimum to tegn.</param>
+            <param name="antall">Maksimalt antall søketreff. Hvis ikke angitt: 10. Maksgrense: 100.</param>
+            <returns></returns>
+        </member>
+        <member name="T:NinMemApi.Controllers.KodetreController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Controllers.KodetreController.#ctor(NinMemApi.GraphDb.G)">
+            <summary>
+            
+            </summary>
+            <param name="g"></param>
+        </member>
+        <member name="M:NinMemApi.Controllers.KodetreController.Filtered(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NinMemApi.Controllers.StatKodetreController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Controllers.StatKodetreController.#ctor(NinMemApi.Data.StatTreeBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="statTreeBuilder"></param>
+        </member>
+        <member name="M:NinMemApi.Controllers.StatKodetreController.Filtered(System.String,System.String,System.String)">
+             <summary>
+            
+             </summary>
+             <param name="node">Rotnoden for treet.</param>
+             <param name="koder">Kommaseparerte koder for filtrering.</param>
+             <param name="bbox">For geografisk filtrering, med format: MinX,MinY,MaxX,MaxY</param>
+             <returns></returns>
+        </member>
+        <member name="T:NinMemApi.Controllers.StatTreNode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Controllers.StatTreNode.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.Kode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.Navn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.AntallArter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.AntallNaturomrader">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.Areal">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.Forelder">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNode.Barn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NinMemApi.Controllers.StatTreNodeBarn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.Kode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.Navn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.AntallArter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.AntallNaturomrader">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.Areal">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeBarn.HarBarn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NinMemApi.Controllers.StatTreNodeForelder">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeForelder.Kode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NinMemApi.Controllers.StatTreNodeForelder.Navn">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NinMemApi.Middleware.ErrorHandlingMiddleware">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Middleware.ErrorHandlingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            
+            </summary>
+            <param name="next"></param>
+        </member>
+        <member name="M:NinMemApi.Middleware.ErrorHandlingMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NinMemApi.Program">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Program.Main(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:NinMemApi.Program.BuildWebHost(System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NinMemApi.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:NinMemApi.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NinMemApi.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This method gets called by the runtime. Use this method to add services to the container.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:NinMemApi.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+    </members>
+</doc>
