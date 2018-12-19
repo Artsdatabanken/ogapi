@@ -16,7 +16,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
             return json
                 .Select(line => new DiagnosticTaxon
                 {
-                    NatureAreaType = "NA_" + line.Kartleggingsenhet,
+                    NatureAreaType = "NA-" + line.Kartleggingsenhet,
                     ScientificNameId = line.ScientificNameId
                 })
                 .ToArray();

@@ -19,7 +19,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             const string redlistCategorySql =
  @"SELECT c_g.geometry_id AS NatureAreaId, c.id AS CategoryId, c.code AS CategoryName
 FROM data.codes_geometry c_g, data.codes c
-WHERE c.code like 'RL_%'
+WHERE c.code like 'RL%'
 AND c.id = c_g.codes_id";
 
             IEnumerable<RedlistCategoryDto> redlistCategoryDtos = null;

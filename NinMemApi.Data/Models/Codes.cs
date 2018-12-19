@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 
 namespace NinMemApi.Data.Models
@@ -14,12 +16,17 @@ namespace NinMemApi.Data.Models
 
         public void AddCode(string code, string parentCode, string name)
         {
+            if(code != parentCode)
             _codes.Add(code, new CodeItem
             {
                 Code = code,
                 ParentCode = parentCode,
                 Name = name
             });
+            else
+            {
+                Console.WriteLine($"Code {code} has self as parent and will be skipped");
+            }
         }
 
         public CodeItem GetCode(string code)

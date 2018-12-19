@@ -46,6 +46,10 @@ namespace NinMemApi.DataPreprocessing
         private static async Task StoreData(string ninConnectionString, string urlAlleKoder, string urlVariasjoner,
             string redList)
         {
+            var ninMemApiDataLocation = _configuration["NinMemApiData"];
+
+            if(!Directory.Exists(ninMemApiDataLocation)) throw new DirectoryNotFoundException("Directory given in appsettings.json for \"NinMemApiData\" not found");
+
             var koder = GetKoder(urlAlleKoder, urlVariasjoner);
 
             var natureAreas = await DataLoaders.NatureAreas.NatureAreaLoader.Load(ninConnectionString);
@@ -54,16 +58,12 @@ namespace NinMemApi.DataPreprocessing
             var redlistData = await RedlistLoader.Load(ninConnectionString, redList);
             var geographicalData = await GeographicalAreaLoader.Load(ninConnectionString);
             var taxons = TaxonLoader.Get(ninConnectionString);
-            var codetree = new WebClient().DownloadString("https://adb-typesystem.surge.sh/kodetre.json");
+            var codetree = new WebClient().DownloadString(_configuration["Kodetre"]);
             var natureAreaVariables = await NatureAreaVariablesLoader.Load(ninConnectionString);
             //// TODO: uncomment this when TaxonTraits is back
             //var taxonTraits = File.ReadAllText("..\\..\\..\\Data\\taxonTraits.json");
 
-            var ninMemApiDataLocation = _configuration["NinMemApiData"];
-
-            if(!Directory.Exists(ninMemApiDataLocation)) throw new DirectoryNotFoundException("Directory given in appsettings.json for \"NinMemApiData\" not found");
-
-            var localStorage = new LocalStorage(ninMemApiDataLocation);
+           var localStorage = new LocalStorage(ninMemApiDataLocation);
 
             await Task.WhenAll(
                 localStorage.Store(StorageKeys.NatureAreas, natureAreas),
@@ -88,13 +88,13 @@ namespace NinMemApi.DataPreprocessing
 
                 var alleKoder = GetKodeinstanser(urlAlleKoder, webClient);
 
-                var variasjonKoder = GetKodeinstanser(urlVariasjoner, webClient);
+                var variasjonKoder = GetKodeinstanser(urlVariasjoner, webClient, "NA-BS");
 
                 return (alleKoder, variasjonKoder);
             }
         }
 
-        private static List<KodeInstans> GetKodeinstanser(string urlAlleKoder, WebClient webClient)
+        private static List<KodeInstans> GetKodeinstanser(string urlAlleKoder, WebClient webClient, string prefix = null)
         {
             string json = webClient.DownloadString(urlAlleKoder);
 
@@ -102,8 +102,11 @@ namespace NinMemApi.DataPreprocessing
 
             foreach (var instans in kodeinstanser)
             {
-                instans.Kode.Id = instans.Kode.Id.Replace(" ", "_").ToUpper();
-                instans.OverordnetKode.Id = instans.OverordnetKode.Id?.Replace(" ", "_").ToUpper();
+                var kodeId = instans.Kode.Id.Replace(" ", "-").Replace("_", "-").ToUpper();
+                var overordnetKodeId = instans.OverordnetKode.Id?.Replace(" ", "-").Replace("_", "-").ToUpper();
+
+                instans.Kode.Id = string.IsNullOrEmpty(prefix) ? kodeId : prefix  + "-" + kodeId;
+                instans.OverordnetKode.Id = string.IsNullOrEmpty(prefix) ? overordnetKodeId : prefix + "-" + overordnetKodeId;
             }
 
             return kodeinstanser;

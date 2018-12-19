@@ -280,7 +280,7 @@ namespace NinMemApi.Data
 
         private KodeNavn[] ToCodeNames(string[] resultSet, int? limit = null)
         {
-            var reorderedResultSet = resultSet.Where(c => c.StartsWith("na_")).Concat(resultSet.Where(c => !c.StartsWith("na_")));
+            var reorderedResultSet = resultSet.Where(c => c.StartsWith("na-")).Concat(resultSet.Where(c => !c.StartsWith("na-")));
 
             var list = new List<KodeNavn>();
 

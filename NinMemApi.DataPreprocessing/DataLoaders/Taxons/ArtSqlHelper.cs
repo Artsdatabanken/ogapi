@@ -65,8 +65,8 @@ data.geometry omr,
 data.codes_geometry cg_art,
 data.codes_geometry cg_omr
 where
-cg_art.code like 'AR_%' AND
-( cg_omr.code like 'VV_%' OR cg_omr.code like 'AO_%') AND
+cg_art.code like 'AR-%' AND
+( cg_omr.code like 'VV-%' OR cg_omr.code like 'AO-%') AND
 art.id = cg_art.geometry_id AND
 omr.id = cg_omr.geometry_id AND
 st_intersects(art.geography, omr.geography)";
@@ -77,7 +77,7 @@ st_intersects(art.geography, omr.geography)";
                 {
                     var taxon = taxonDict[geoAreaConnection.TaxonId.Remove(0,3)];
 
-                    if (geoAreaConnection.Number.StartsWith("AO_"))
+                    if (geoAreaConnection.Number.StartsWith("AO-"))
                     {
                         taxon.Municipalities.Add(int.Parse(geoAreaConnection.Number.Remove(0,3).Replace("-","")));
                     }

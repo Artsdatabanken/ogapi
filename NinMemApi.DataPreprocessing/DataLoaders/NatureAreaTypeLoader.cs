@@ -16,7 +16,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             const string natureAreaTypeCodeSql =
 @"SELECT nat.geometry_id AS NatureAreaId, nat.code AS Code, nat.fraction AS Percentage
 FROM data.codes_geometry nat
-WHERE nat.code LIKE 'NA_%'
+WHERE nat.code LIKE 'NA-%' and nat.code not LIKE 'NA-BS%' and nat.code not LIKE 'NA-LKM%'
 GROUP BY nat.geometry_id, nat.code, nat.fraction";
 
             IEnumerable<NatureAreaTypeDto> dtos = null;
