@@ -38,7 +38,6 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
                     AND p2.value LIKE 'NA%'
                     AND p2.value NOT LIKE 'NA-BS%'
                     AND p2.value NOT LIKE 'NA-LKM%'
-                    AND c_g.aggregated is not null
                     AND (c_g.aggregated = false OR c_g.aggregated is null)
                     AND (c_g2.aggregated = false OR c_g2.aggregated is null)
                     AND ST_Intersects(g.geography::geometry, g2.geography::geometry)
