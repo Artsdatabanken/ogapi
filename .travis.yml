@@ -5,7 +5,8 @@ script:
  - dotnet build
  - dotnet test Trees.Tests
 before_install:
- - docker build --tag artsdatabanken/ninmemapi .
+ - docker build -f Dockerfile.ninmemapi . --tag artsdatabanken/ninmemapi
+ - docker build -f Dockerfile.datapreprocessing . --tag artsdatabanken/ninmemapi_datapreprocessing
 deploy:
   skip_cleanup: true
   provider: script
