@@ -13,10 +13,12 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
     {
         public static async Task<List<DescriptionVariable>> Load(string connectionString, Codes descriptionVariableCodes)
         {
+            Console.WriteLine("Loading DescriptionVariables");
+
             const string descriptionVariableSql =
                 @"SELECT bv.code AS DvCode, nomt.code AS NatCode, bv.geometry_id AS NatureAreaId, nomt.fraction AS NatureAreaPercentage
                     FROM data.codes_geometry bv, data.codes_geometry nomt
-                    WHERE bv.geometry_id = nomt.geometry_id and bv.code like 'BS_%' and nomt.code like 'NA_%'
+                    WHERE bv.geometry_id = nomt.geometry_id and bv.code like 'NA-BS%' and nomt.code like 'NA-%' and nomt.code NOT like 'NA-BS%' and nomt.code NOT like 'NA-LKM%'
                     GROUP BY bv.code, nomt.code, bv.geometry_id, nomt.fraction";
 
             IEnumerable<DescriptionVariableDto> descriptionVariableDtos;
@@ -35,7 +37,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             {
                 var codes = dto.DvCode.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-                dto.DvCode = dto.DvCode.Remove(0,3);
+                //dto.DvCode = dto.DvCode.Remove(0,3);
 
                 foreach (var code in codes)
                 {
@@ -83,6 +85,8 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
                     }
                 }
             }
+
+            Console.WriteLine("Finished loading DescriptionVariables");
 
             return dict.Values.ToList();
         }

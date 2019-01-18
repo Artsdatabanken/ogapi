@@ -16,20 +16,32 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             const string geographicalAreaSql =
                 @"SELECT 
                     g2.id AS NatureAreaId, c_g.code AS Number, c.title AS Name, '' AS Category
-                    FROM 
+                FROM 
                     data.codes_geometry c_g, 
-                    data.codes_geometry c_g2, 
-                    data.codes c, 
+                    data.codes_geometry c_g2,
+                    data.codes c,
+                    data.dataset d,
+                    data.dataset d2,
+                    data.prefix p,
+                    data.prefix p2,
                     data.geometry g, 
                     data.geometry g2
-                    WHERE 
+                WHERE 
                     c_g.codes_id = c.id
                     AND c_g.geometry_id = g.id
-                    AND (c_g.code LIKE 'AO_%' OR c_g.code LIKE 'VV_%')
+                    AND g.dataset_id = d.id
+                    AND d.prefix_id = p.id
+                    AND p.value IN ('AO','VV')
                     AND c_g2.geometry_id = g2.id
-                    AND (c_g2.code LIKE 'NA_%')
-                    AND ST_Intersects(g.geography, g2.geography)
-                    ORDER by c_g.code";
+                    AND g2.dataset_id = d2.id
+                    AND d2.prefix_id = p2.id
+                    AND p2.value LIKE 'NA%'
+                    AND p2.value NOT LIKE 'NA-BS%'
+                    AND p2.value NOT LIKE 'NA-LKM%'
+                    AND (c_g.aggregated = false OR c_g.aggregated is null)
+                    AND (c_g2.aggregated = false OR c_g2.aggregated is null)
+                    AND ST_Intersects(g.geography::geometry, g2.geography::geometry)
+                ORDER by c_g.code";
 
             IEnumerable<GeographicalAreaDto> geographicalAreaDtos = null;
 

@@ -77,7 +77,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders.Taxons
                 }
 
                 taxon.BlacklistCategory = fa3.RiskAssessment.RiskLevelCode;
-                foreach (string naCode in fa3.ImpactedNatureTypes.Select(nt => "NA_" + nt.NiNCode))
+                foreach (string naCode in fa3.ImpactedNatureTypes.Select(nt => "NA-" + nt.NiNCode))
                 {
                     taxon.NatureAreaTypeCodes.Add(naCode);
                 }

@@ -43,8 +43,10 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
                             @"SELECT bv.code AS DvCode, nomt.code AS NatCode, bv.geometry_id AS NatureAreaId
                     FROM data.codes_geometry bv, data.codes_geometry nomt
                     WHERE nomt.geometry_id = bv.geometry_id
-                    AND nomt.code LIKE 'NA_%'
-                    AND bv.code LIKE 'BS_%'
+                    AND nomt.code LIKE 'NA%'
+                    AND nomt.code NOT LIKE 'NA-BS%'
+                    AND nomt.code NOT LIKE 'NA-LKM%'
+                    AND bv.code LIKE 'NA-BS%'
                     GROUP BY bv.code, nomt.code, bv.geometry_id";
 
             IEnumerable<DescriptionVariableDto> descriptionVariableDtos;
@@ -76,7 +78,7 @@ namespace NinMemApi.DataPreprocessing.DataLoaders
             // TODO: Add in mapped if we get it in the database
             const string natureAreaTypeCodeSql =
             @"SELECT nat.geometry_id AS NatureAreaId, nat.code AS Code, nat.fraction AS Percentage, null AS Mapped
-FROM data.codes_geometry nat where nat.code LIKE 'NA_%'";
+FROM data.codes_geometry nat where nat.code LIKE 'NA%' AND nat.code NOT LIKE 'NA-BS%' AND nat.code NOT LIKE 'NA-LKM%'";
 
             IEnumerable<NatureAreaTypeDto> natureAreaTypeDtos = null;
 
