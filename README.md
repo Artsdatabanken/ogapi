@@ -18,7 +18,7 @@ API for økologi
 
 ...
 
-## Dyanmisk Graph API
+## Dynamisk Graph API
 
 Graph-delen av APIet har 2 operasjoner på går mot grafdatabasen i CosmosDB. Denne har fokus på taxon traits som er hentet fra [EoL](http://eol.org/). Den inkluderer arter som har EoL-traits, samt deres foreldre. Årsaken til dette er tiden det tar å få lagt inn data, siden CosmosDB må sies å være et nokså umodent produkt på dette tidspunktet. CosmosDBs "killer feature" er i denne sammenhengen "out of the box"-støtte for spørrespråket [Gremlin](https://github.com/tinkerpop/gremlin/wiki), som omtales om litt. Det er også fort gjort å sette opp CosmosDB i Azure. Ved ønske om å bruke mer tid på et oppsett med andre muligheter, er [JanusGraph](http://janusgraph.org/) et aktuelt alternativ.
 
